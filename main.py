@@ -6,7 +6,13 @@ from langchain.schema import (
     AIMessage
 )
 from langchain.callbacks import get_openai_callback
-
+import firebase_admin
+from firebase_admin import credentials
+from firebase_admin import firestore
+import datetime
+import pytz
+global now
+now = datetime.datetime.now(pytz.timezone('Asia/Tokyo'))
 
 def init_page():
     st.set_page_config(
@@ -21,7 +27,7 @@ def init_messages():
     clear_button = st.sidebar.button("Clear Conversation", key="clear")
     if clear_button or "messages" not in st.session_state:
         st.session_state.messages = [
-            SystemMessage(content="研究者のような口調で返答してください")
+            SystemMessage(content="語尾に'にゃん'をつけて可愛く返答してください")
         ]
         st.session_state.costs = []
 
@@ -51,6 +57,15 @@ def main():
 
     llm = select_model()
     init_messages()
+    count = 0
+    if not firebase_admin._apps:
+        # 初期済みでない場合は初期化処理を行う
+        cred = credentials.Certificate('chatapp-509c9-firebase-adminsdk-5tvj9-9106d52707.json') 
+        default_app = firebase_admin.initialize_app(cred)
+
+    db = firestore.client()
+    doc_ref = db.collection(u'chattest').document(str(now))
+
 
     # ユーザーの入力を監視
     if user_input := st.chat_input("聞きたいことを入力してね！"):
@@ -59,6 +74,13 @@ def main():
             answer, cost = get_answer(llm, st.session_state.messages)
         st.session_state.messages.append(AIMessage(content=answer))
         st.session_state.costs.append(cost)
+        a_count = "Human" + str(count)
+        b_count = "AI" + str(count)
+        # firestoreデータベースへの書き込み
+        doc_ref.set({
+            a_count: user_input,
+            b_count: answer
+        })
 
     messages = st.session_state.get('messages', [])
     for message in messages:
