@@ -42,7 +42,7 @@ prompt = ChatPromptTemplate.from_messages([
 @st.cache_resource
 def load_conversation():
     llm = ChatOpenAI(
-        model_name="gpt-3.5-turbo",
+        model_name="gpt-4",
         temperature=0
     )
     memory = ConversationBufferMemory(return_messages=True)
@@ -84,7 +84,7 @@ def redirect_to_url(url):
     st.markdown(new_tab_js, unsafe_allow_html=True)
 
 # タイトルやキャプション部分のUI
-st.title("Q&A Chatbot")
+st.title("ChatApp")
 #st.caption("Q&A")
 st.write("議論を行いましょう！")
 user_number = st.text_input("学籍番号を入力してエンターを押してください")
