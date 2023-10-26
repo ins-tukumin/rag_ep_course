@@ -123,7 +123,7 @@ with chat_placeholder.container():
 
 # 質問入力欄と送信ボタンを設置
 with st.container():
-    user_message = st.text_input("質問を入力して送信ボタンを押してください", key="user_message")
+    user_message = st.text_input("内容を入力して送信ボタンを押してください", key="user_message")
     st.button("送信", on_click=on_input_change)
 # 質問入力欄 上とどっちが良いか    
 #if user_message := st.chat_input("聞きたいことを入力してね！", key="user_message"):
