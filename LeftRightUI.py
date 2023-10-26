@@ -39,18 +39,32 @@ prompt = ChatPromptTemplate.from_messages([
 ])
 
 #会話の読み込みを行う関数を定義
-@st.cache_resource
+#@st.cache_resource
+#def load_conversation():
+    #llm = ChatOpenAI(
+        #model_name="gpt-4",
+        #temperature=0
+    #)
+    #memory = ConversationBufferMemory(return_messages=True)
+    #conversation = ConversationChain(
+        #memory=memory,
+        #prompt=prompt,
+        #llm=llm)
+    #return conversation
+
+# デコレータを使わない会話履歴読み込み
 def load_conversation():
-    llm = ChatOpenAI(
-        model_name="gpt-4",
-        temperature=0
-    )
-    memory = ConversationBufferMemory(return_messages=True)
-    conversation = ConversationChain(
-        memory=memory,
-        prompt=prompt,
-        llm=llm)
-    return conversation
+    if not hasattr(st.session_state, "conversation"):
+        llm = ChatOpenAI(
+            model_name="gpt-4",
+            temperature=0
+        )
+        memory = ConversationBufferMemory(return_messages=True)
+        st.session_state.conversation = ConversationChain(
+            memory=memory,
+            prompt=prompt,
+            llm=llm)
+    return st.session_state.conversation
 
 # 質問と回答を保存するための空のリストを作成
 if "generated" not in st.session_state:
