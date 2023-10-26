@@ -85,8 +85,8 @@ def redirect_to_url(url):
 
 # タイトルやキャプション部分のUI
 st.title("Q&A Chatbot")
-st.caption("Q&A")
-st.write("あなたの質問に答えます。")
+#st.caption("Q&A")
+st.write("議論を行いましょう！")
 user_number = st.text_input("学籍番号を入力してエンターを押してください")
 if user_number:
     st.write(f"こんにちは、{user_number}さん！")
