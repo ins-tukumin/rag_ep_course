@@ -116,7 +116,7 @@ with st.container():
 #    on_input_change()
 
 
-redirect_link = "https://www.google.com"
+redirect_link = "https://nagoyapsychology.qualtrics.com/jfe/form/SV_cw48jqskbAosSLY"
 st.markdown(f'<a href="{redirect_link}" target="_blank">5往復のチャットが終了したらこちらを押してください。</a>', unsafe_allow_html=True)
 #if st.button("終了したらこちらを押してください。画面が遷移します。"):
     #redirect_to_url("https://www.google.com")
