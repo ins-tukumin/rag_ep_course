@@ -22,8 +22,8 @@ global now
 now = datetime.datetime.now(pytz.timezone('Asia/Tokyo'))
 
 # 環境変数の読み込み
-from dotenv import load_dotenv
-load_dotenv()
+#from dotenv import load_dotenv
+#load_dotenv()
 
 #プロンプトテンプレートを作成
 template = """
