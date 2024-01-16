@@ -1,3 +1,4 @@
+# Fairness → binding
 # ライブラリをインポート
 import streamlit as st
 from streamlit_chat import message
@@ -16,6 +17,7 @@ from firebase_admin import credentials
 from firebase_admin import firestore
 import datetime
 import pytz
+import time
 
 #現在時刻
 global now
@@ -27,8 +29,59 @@ now = datetime.datetime.now(pytz.timezone('Asia/Tokyo'))
 
 #プロンプトテンプレートを作成
 template = """
-あなたは聞かれた質問に答える優秀なアシスタントです。
-語尾ににゃんをつけて回答してください。
+今からチャットボットと私で会話のロールプレイをしましょう。
+設定は以下の通りです。
+
+テーマ：
+日本は原子力発電を廃止すべきか否か
+
+シナリオ：
+チャットボットと私は同じ日本の大学に通い、同じ講義を受けている大学生になりきります。
+今、講義の途中、先生が、二人組でグループワークをするよう指示しました。
+二人でテーマについて、自分の意見を主張し、簡単な議論をします。
+お互いチャット上の匿名のやりとりになります。
+会話を終えたら、もう二人が会って話すことはありません。
+
+ゴール：
+私たちの隠れた目的は、お互いの意見を交換し、共通点と相違点を明らかにすることです。積極的に意見を主張したり質問したりするなどして、自分の道徳観に従って議論してください。
+
+事前知識：
+・道徳基盤理論について
+道徳基盤理論(Moral Foundations Theory)についてはご存知ですね。
+Haidtの道徳基盤理論では5つの基盤が存在します。
+また道徳基盤理論は、イデオロギーや社会問題と関連する知見もあります。
+社会問題に関する会話や意見において、道徳基盤は価値判断、意見、他者への反応を決定します。
+
+チャットボットのロール：
+・名前　鈴木
+・日本の大学に通う一般的な大学生
+・｢ですます｣口調で話す
+・原子力発電の廃止に反対
+上記の設定に加え、この人は、以下のチャットボットの道徳基盤に従って議論をします。
+
+チャットボットの道徳基盤：
+5つの道徳基盤のうち、IngroupとAuthorityの基盤の感受性が、一般よりも特に高い人です。
+よってより厳格な秩序のある共同体を作るため、美徳や制度を重視し、人々を役割、義務によって拘束する必要があると考えます。
+
+チャットボットの発言について：
+原子力発電廃止に関する価値判断、意見、発言、他者への反応などの会話は、常にチャットボットの道徳基盤に従って行われます。
+自らのIngroup、Authorityの道徳基盤を踏まえ、社会問題と道徳基盤理論に関連する知見に従って会話を行います。
+
+私のロール：
+チャットボットの話し相手
+・名前は不明
+･日本の大学に通う一般的な大学生
+その他については指定はありません。
+
+チャットボットへの指示：
+上記の設定を踏まえて、私とステップバイステップで会話してください
+一回の回答につき、日本語で100文字以内で回答してください。
+自分の道徳基盤や道徳基盤理論、Moral Foundation Theoryに関することは一切明かさないでください。
+名前を聞かれたら、秘密であると答えてください。
+AIだとばれないよう振る舞ってください。
+もし、私が原子力発電廃止に反対の立場をとっても、チャットボットも原子力発電廃止に反対の立場のまま、議論は続けてください。
+テーマの確認は要りません。
+では、私から話し始めます。
 """
 
 # 会話のテンプレートを作成
@@ -51,12 +104,15 @@ prompt = ChatPromptTemplate.from_messages([
         #prompt=prompt,
         #llm=llm)
     #return conversation
-
-# デコレータを使わない会話履歴読み込み
+model_select = "gpt-4-1106-preview"
+#st.write(model_select)
+# デコレータを使わない会話履歴読み込み for セッション管理
 def load_conversation():
     if not hasattr(st.session_state, "conversation"):
         llm = ChatOpenAI(
-            model_name="gpt-4",
+            #model_name="gpt-4",
+            #model_name="gpt-4",
+            model_name=model_select,
             temperature=0
         )
         memory = ConversationBufferMemory(return_messages=True)
@@ -71,17 +127,40 @@ if "generated" not in st.session_state:
     st.session_state.generated = []
 if "past" not in st.session_state:
     st.session_state.past = []
+    
+# 会話のターン数をカウント
+if 'count' not in st.session_state:
+    st.session_state.count = 0
 
 # 送信ボタンがクリックされた後の処理を行う関数を定義
 def on_input_change():
+    # 会話のターン数をカウント
+    #if 'count' not in st.session_state:
+    #    st.session_state.count = 0
+    st.session_state.count += 1
+    # n往復目にプロンプトテンプレートの一部を改めて入力
+    #if  st.session_state.count == 3:
+    #    api_user_message = st.session_state.user_message + "。そして、これ以降の会話では以前の語尾を廃止して、語尾をにゃんに変えてください"
+    #else:
+    #    api_user_message = st.session_state.user_message
+
     user_message = st.session_state.user_message
     conversation = load_conversation()
-    answer = conversation.predict(input=user_message)
-
+    with st.spinner("相手からの返信を待っています。。。"):
+        if  st.session_state.count == 1:
+            time.sleep(3)
+        elif st.session_state.count == 2:
+            time.sleep(3)
+        elif st.session_state.count == 3:
+            time.sleep(3)
+        elif st.session_state.count == 4:
+            time.sleep(3)
+        elif st.session_state.count == 5:
+            time.sleep(3)
+        else :
+            time.sleep(3)
+        answer = conversation.predict(input=user_message)
     st.session_state.generated.append(answer)
-    #with st.spinner("入力中。。。"):
-            # 任意時間入力中のスピナーを長引かせたい場合はこちら！
-            #time.sleep(60)
     st.session_state.past.append(user_message)
 
     st.session_state.user_message = ""
@@ -93,17 +172,18 @@ def on_input_change():
         AI_Agent: answer
     })
 
+# qualtricdへURL遷移
 def redirect_to_url(url):
     new_tab_js = f"""<script>window.open("{url}", "_blank");</script>"""
     st.markdown(new_tab_js, unsafe_allow_html=True)
 
 # タイトルやキャプション部分のUI
-st.title("ChatApp")
-#st.caption("Q&A")
-st.write("議論を行いましょう！")
-user_number = st.text_input("学籍番号を入力してエンターを押してください")
+# st.title("ChatApp")
+# st.caption("Q&A")
+# st.write("議論を行いましょう！")
+user_number = st.text_input("学籍番号を半角で入力してエンターを押してください")
 if user_number:
-    st.write(f"こんにちは、{user_number}さん！")
+    # st.write(f"こんにちは、{user_number}さん！")
     # 初期済みでない場合は初期化処理を行う
     if not firebase_admin._apps:
             cred = credentials.Certificate('chatapp-509c9-firebase-adminsdk-5tvj9-9106d52707.json') 
@@ -118,13 +198,20 @@ chat_placeholder = st.empty()
 # 会話履歴を表示
 with chat_placeholder.container():
     for i in range(len(st.session_state.generated)):
-        message(st.session_state.past[i],is_user=True)
-        message(st.session_state.generated[i])
+        message(st.session_state.past[i],is_user=True, key=str(i), avatar_style="adventurer", seed="Nala")
+        key_generated = str(i) + "keyg"
+        message(st.session_state.generated[i], key=str(key_generated), avatar_style="micah")
 
 # 質問入力欄と送信ボタンを設置
 with st.container():
-    user_message = st.text_input("内容を入力して送信ボタンを押してください", key="user_message")
-    st.button("送信", on_click=on_input_change)
+    if  st.session_state.count == 0:
+        user_message = st.text_input("「原子力発電は廃止すべき」という意見に対して、あなたの意見を入力して送信ボタンを押してください", key="user_message")
+        st.button("送信", on_click=on_input_change)
+    elif st.session_state.count == 5:
+        st.write("意見交換はこちらで終了です。URLをクリックしてください。")
+    else:
+        user_message = st.text_input("あなたの意見を入力して送信ボタンを押してください", key="user_message")
+        st.button("送信", on_click=on_input_change)
 # 質問入力欄 上とどっちが良いか    
 #if user_message := st.chat_input("聞きたいことを入力してね！", key="user_message"):
 #    on_input_change()
@@ -134,5 +221,3 @@ redirect_link = "https://nagoyapsychology.qualtrics.com/jfe/form/SV_cw48jqskbAos
 st.markdown(f'<a href="{redirect_link}" target="_blank">5往復のチャットが終了したらこちらを押してください。</a>', unsafe_allow_html=True)
 #if st.button("終了したらこちらを押してください。画面が遷移します。"):
     #redirect_to_url("https://www.google.com")
-
-
