@@ -120,8 +120,8 @@ if student_id:
                 response_text = response["answer"]
             st.session_state.past.append(user_message)
             st.session_state.generated.append(response_text)
-            #st.session_state.user_message = ""
-            st.session_state["user_message"] = ""
+            st.session_state.user_message = ""
+            #st.session_state["user_message"] = ""
             Human_Agent = "Human" 
             AI_Agent = "AI" 
             doc_ref = db.collection(student_id).document(str(now))
@@ -137,12 +137,14 @@ if student_id:
                 message(st.session_state.past[i], is_user=True, key=str(i), avatar_style="adventurer", seed="Nala")
                 key_generated = str(i) + "keyg"
                 message(st.session_state.generated[i], key=str(key_generated), avatar_style="micah")
-        user_message = st.text_input("内容を入力して送信ボタンを押してください", key="user_message")
-        if st.button("送信"):
-            on_input_change()
-        # ターン数に応じた機能を追加
+                
+        with st.container():
         if st.session_state.count == 3:
             st.write("3 turns completed. Please proceed to the next step.")
+        else:
+        user_message = st.text_input("内容を入力して送信ボタンを押してください", key="user_message")
+        st.button("送信", on_click=on_input_change)
+        # ターン数に応じた機能を追加
         #--------------------------------------------
         #if "messages" not in st.session_state:
             #st.session_state.messages = []
