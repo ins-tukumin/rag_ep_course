@@ -8,8 +8,5 @@ firestore
 datetime
 pytz
 
-Chroma
-OpenAIEmbeddings
-ConversationalRetrievalChain
-ConversationBufferMemory
-PromptTemplate
+
+chromadb 
