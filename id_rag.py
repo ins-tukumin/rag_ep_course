@@ -126,7 +126,7 @@ if student_id:
             AI_Agent = "AI" 
             doc_ref = db.collection(student_id).document(str(now))
             doc_ref.set({
-                Human_Agent: user_messeage,
+                Human_Agent: user_message,
                 AI_Agent: response_text
             })
         # 会話履歴を表示するためのスペースを確保
