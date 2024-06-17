@@ -10,3 +10,4 @@ pytz
 
 
 chromadb 
+langchain_community
