@@ -8,7 +8,6 @@ firestore
 datetime
 pytz
 
-ChatOpenAI
 Chroma
 OpenAIEmbeddings
 ConversationalRetrievalChain
