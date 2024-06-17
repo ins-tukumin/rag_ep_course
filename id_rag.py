@@ -142,8 +142,8 @@ if student_id:
             if st.session_state.count == 3:
                 st.write("3 turns completed. Please proceed to the next step.")
             else:
-            user_message = st.text_input("内容を入力して送信ボタンを押してください", key="user_message")
-            st.button("送信", on_click=on_input_change)
+                user_message = st.text_input("内容を入力して送信ボタンを押してください", key="user_message")
+                st.button("送信", on_click=on_input_change)
         # ターン数に応じた機能を追加
         #--------------------------------------------
         #if "messages" not in st.session_state:
