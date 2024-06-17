@@ -7,5 +7,7 @@ credentials
 firestore
 datetime
 pytz
+pysqlite-binary==0.5.1.3380300 
+pysqlite3==0.5.2
 chromadb 
 langchain_community
