@@ -120,7 +120,8 @@ if student_id:
                 response_text = response["answer"]
             st.session_state.past.append(user_message)
             st.session_state.generated.append(response_text)
-            st.session_state.user_message = ""
+            #st.session_state.user_message = ""
+            st.session_state["user_message"] = ""
             Human_Agent = "Human" 
             AI_Agent = "AI" 
             doc_ref = db.collection(student_id).document(str(now))
