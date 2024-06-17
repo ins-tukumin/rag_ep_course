@@ -139,19 +139,19 @@ if student_id:
                 message(st.session_state.generated[i], key=str(key_generated), avatar_style="micah")
                 
         with st.container():
-        if st.session_state.count == 3:
-            st.write("3 turns completed. Please proceed to the next step.")
-        else:
-        user_message = st.text_input("内容を入力して送信ボタンを押してください", key="user_message")
-        st.button("送信", on_click=on_input_change)
+            if st.session_state.count == 3:
+                st.write("3 turns completed. Please proceed to the next step.")
+            else:
+            user_message = st.text_input("内容を入力して送信ボタンを押してください", key="user_message")
+            st.button("送信", on_click=on_input_change)
         # ターン数に応じた機能を追加
         #--------------------------------------------
         #if "messages" not in st.session_state:
             #st.session_state.messages = []
 
         #for message in st.session_state.messages:
-            with st.chat_message(message["role"]):
-                st.markdown(message["content"])
+           # with st.chat_message(message["role"]):
+                #st.markdown(message["content"])
 
         #prompt_input = st.chat_input("入力してください", key="propmt_input")
 
