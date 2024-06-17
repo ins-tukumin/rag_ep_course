@@ -8,6 +8,5 @@ firestore
 datetime
 pytz
 pysqlite3-binary
-pysqlite3
 chromadb 
 langchain_community
