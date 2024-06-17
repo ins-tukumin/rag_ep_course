@@ -7,7 +7,5 @@ credentials
 firestore
 datetime
 pytz
-
-
 chromadb 
 langchain_community
