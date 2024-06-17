@@ -10,9 +10,27 @@ from langchain.chains import ConversationalRetrievalChain
 from langchain.memory import ConversationBufferMemory
 from langchain.prompts import PromptTemplate
 
+from langchain.prompts.chat import (
+    ChatPromptTemplate,
+    SystemMessagePromptTemplate,
+    HumanMessagePromptTemplate,
+    MessagesPlaceholder,
+)
+
+import firebase_admin
+from firebase_admin import credentials
+from firebase_admin import firestore
+import datetime
+import pytz
+import time
+
+#現在時刻
+global now
+now = datetime.datetime.now(pytz.timezone('Asia/Tokyo'))
+
 # テンプレートの設定
 template = """
-    Use the following context (delimited by <ctx></ctx>) and the chat history (delimited by <hs></hs>) to answer the question(なお、日本語で答えてください。):
+    Use the following context (delimited by <ctx></ctx>) and the chat history (delimited by <hs></hs>) to answer the question. また、ドキュメントを提供しますので、適宜参照して会話してください。なお、日本語で話してください。:
     ------
     <ctx>
     {context}
@@ -33,20 +51,24 @@ prompt = PromptTemplate(
 )
 
 # UIの設定
-st.title("RAG Chatbot with Student ID")
-student_id = st.text_input("Enter your student ID:")
+student_id = st.text_input("学籍番号を半角で入力してエンターを押してください")
 
-with st.sidebar:
+#with st.sidebar:
     #user_api_key = st.text_input(
         #label="OpenAI API key",
         #placeholder="Paste your OpenAI API key",
         #type="password"
     #)
     #os.environ['OPENAI_API_KEY'] = user_api_key
-    select_model = st.selectbox("Model", ["gpt-4", "gpt-4o"])
-    select_temperature = st.slider("Temperature", min_value=0.0, max_value=2.0, value=0.0, step=0.1)
+select_model = "gpt-4o"
+select_temperature = 0.0
 
 if student_id:
+    if not firebase_admin._apps:
+        cred = credentials.Certificate('ragtest-5e402-firebase-adminsdk-qz4o3-ce2b4f2ed6.json') 
+        default_app = firebase_admin.initialize_app(cred)
+    db = firestore.client()
+    
     db_path = f"./vector_databases/{student_id}"
     if os.path.exists(db_path):
         embeddings = OpenAIEmbeddings(
@@ -80,26 +102,101 @@ if student_id:
             combine_docs_chain_kwargs={'prompt': prompt}
         )
 
+        #--------------------------------------------
         if "messages" not in st.session_state:
             st.session_state.messages = []
+        if "generated" not in st.session_state:
+            st.session_state.generated = []
+        if "past" not in st.session_state:
+            st.session_state.past = []
+        if "count" not in st.session_state:
+            st.session_state.count = 0
 
-        for message in st.session_state.messages:
+        def on_input_change():
+            st.session_state.count += 1
+            user_message = st.session_state.user_message
+            with st.spinner("Thinking..."):
+                response = chain({"question": user_message})
+                response_text = response["answer"]
+            st.session_state.past.append(user_message)
+            st.session_state.generated.append(response_text)
+            st.session_state.user_message = ""
+            Human_Agent = "Human" 
+            AI_Agent = "AI" 
+            doc_ref = db.collection(student_id).document(str(now))
+            doc_ref.set({
+                Human_Agent: user_messeage,
+                AI_Agent: response_text
+            })
+        # 会話履歴を表示するためのスペースを確保
+        chat_placeholder = st.empty()
+        # 会話履歴を表示
+        with chat_placeholder.container():
+            for i in range(len(st.session_state.generated)):
+                message(st.session_state.past[i], is_user=True, key=str(i), avatar_style="adventurer", seed="Nala")
+                key_generated = str(i) + "keyg"
+                message(st.session_state.generated[i], key=str(key_generated), avatar_style="micah")
+        user_message = st.text_input("内容を入力して送信ボタンを押してください", key="user_message")
+        if st.button("送信"):
+            on_input_change()
+        # ターン数に応じた機能を追加
+        if st.session_state.count == 3:
+            st.write("3 turns completed. Please proceed to the next step.")
+        #--------------------------------------------
+        #if "messages" not in st.session_state:
+            #st.session_state.messages = []
+
+        #for message in st.session_state.messages:
             with st.chat_message(message["role"]):
                 st.markdown(message["content"])
 
-        prompt_input = st.chat_input("Ask something about the file.")
+        #prompt_input = st.chat_input("入力してください", key="propmt_input")
 
-        if prompt_input:
-            st.session_state.messages.append({"role": "user", "content": prompt_input})
-            with st.chat_message("user"):
-                st.markdown(prompt_input)
+        #if prompt_input:
+            #st.session_state.messages.append({"role": "user", "content": prompt_input})
+            #with st.chat_message("user"):
+                #st.markdown(prompt_input)
 
-            with st.chat_message("assistant"):
-                with st.spinner("Thinking..."):
-                    response = chain({"question": prompt_input})
-                    st.markdown(response["answer"])
+            #with st.chat_message("assistant"):
+                #with st.spinner("Thinking..."):
+                    #response = chain({"question": prompt_input})
+                    #st.markdown(response["answer"])
             
-            st.session_state.messages.append({"role": "assistant", "content": response["answer"]})
+            #st.session_state.messages.append({"role": "assistant", "content": response["answer"]})
 
     else:
         st.error(f"No vector database found for student ID {student_id}.")
+
+
+hide_streamlit_style = """
+                <style>
+                div[data-testid="stToolbar"] {
+                visibility: hidden;
+                height: 0%;
+                position: fixed;
+                }
+                div[data-testid="stDecoration"] {
+                visibility: hidden;
+                height: 0%;
+                position: fixed;
+                }
+                div[data-testid="stStatusWidget"] {
+                visibility: hidden;
+                height: 0%;
+                position: fixed;
+                }
+                #MainMenu {
+                visibility: hidden;
+                height: 0%;
+                }
+                header {
+                visibility: hidden;
+                height: 0%;
+                }
+                footer {
+                visibility: hidden;
+                height: 0%;
+                }
+                </style>
+                """
+st.markdown(hide_streamlit_style, unsafe_allow_html=True)
