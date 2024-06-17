@@ -7,3 +7,10 @@ credentials
 firestore
 datetime
 pytz
+
+ChatOpenAI
+Chroma
+OpenAIEmbeddings
+ConversationalRetrievalChain
+ConversationBufferMemory
+PromptTemplate
