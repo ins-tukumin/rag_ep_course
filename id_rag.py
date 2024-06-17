@@ -3,9 +3,6 @@ import sys
 sys.modules['sqlite3'] = sys.modules.pop('pysqlite3')
 import os
 import streamlit as st
-#import sys 
-#sys.modules['sqlite3'] = sys.modules.pop('pysqlite3')
-#import sqlite3
 from langchain.chat_models import ChatOpenAI
 from langchain.vectorstores import Chroma
 from langchain.embeddings import OpenAIEmbeddings
