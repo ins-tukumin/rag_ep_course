@@ -5,7 +5,7 @@ from langchain.embeddings import OpenAIEmbeddings
 from langchain.vectorstores import Chroma
 
 # OpenAI APIキーを設定
-os.environ['OPENAI_API_KEY'] = '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'
+#os.environ['OPENAI_API_KEY'] = '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'
 
 # PDFが格納されているディレクトリ
 pdf_directory = "./pdfsvector"
