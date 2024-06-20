@@ -37,6 +37,7 @@ template = """
     表面的なコミュニケーションではなく、私のことをよく理解した上で会話してほしいです。
     受け身にならずに積極的に私に語り掛けてほしいです。
     敬語は使わないでください。私の友達になったつもりで砕けた口調で話してください。
+    150~200字程度で話してください。
     日本語で話してください。
     Use the following context (delimited by <ctx></ctx>) and the chat history (delimited by <hs></hs>) to answer the question. また、ドキュメントを提供しますので、適宜参照して会話してください。なお、日本語で話してください。:
     ------
