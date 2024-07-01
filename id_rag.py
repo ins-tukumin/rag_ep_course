@@ -36,6 +36,9 @@ template = """
     この会話では私のお悩み相談に乗ってほしいです。悩みは進路関係に関するものです。
     必要に応じて、私の日記に書かれている情報を参照して、私の事を理解して会話してください。
     ただ、”あなたの日記を読んでみると”といったような、日記を読んだ動作を直接示すような言葉は出力に含めないでください。
+    さらに、この会話では私の日記に含まれる「エピソード記憶」を積極的に話題に出して会話してほしいです。エピソード記憶という言葉の意味は以下に示します。
+    # エピソード記憶とは、人間の記憶の中でも特に個人的な経験や出来事を覚える記憶の種類の一つです。エピソード記憶は、特定の時間と場所に関連する出来事を含む記憶であり、過去の個人的な経験を詳細に思い出すことができる記憶を指します。
+    エピソード記憶を参照して話題に出すというのは、例えば、「あの日に遊園地に行ったときに乗ったあのアトラクションで感じたあの感情は今の感情に似ているね」といった具合です。
     敬語は使わないでください。私の友達になったつもりで砕けた口調で話してください。
     150~200字程度で話してください。
     日本語で話してください。
@@ -74,7 +77,7 @@ select_temperature = 0.0
 
 if student_id:
     if not firebase_admin._apps:
-        cred = credentials.Certificate('rag-course-84ec8-firebase-adminsdk-ftxi5-e847a47ba1.json') 
+        cred = credentials.Certificate('rag-ep-relationships-firebase-adminsdk-f14cb-938997dee0.json') 
         default_app = firebase_admin.initialize_app(cred)
     db = firestore.client()
     
@@ -149,7 +152,8 @@ if student_id:
                 
         with st.container():
             if st.session_state.count == 3:
-                st.write("3 turns completed. Please proceed to the next step.")
+                html_link = '<a href="https://www.example.com" target="_blank">これで会話は終了です。こちらをクリックしてアンケートに回答してください。</a>'
+                st.markdown(html_link, unsafe_allow_html=True)
             else:
                 user_message = st.text_input("内容を入力して送信ボタンを押してください", key="user_message")
                 st.button("送信", on_click=on_input_change)
