@@ -63,7 +63,7 @@ prompt = PromptTemplate(
 )
 
 # UIの設定
-student_id = st.text_input("学籍番号を半角で入力してエンターを押してください")
+student_id = st.text_input("IDを入力してエンターを押してください")
 
 #with st.sidebar:
     #user_api_key = st.text_input(
@@ -128,7 +128,7 @@ if student_id:
         default_app = firebase_admin.initialize_app(cred)
     db = firestore.client()
     
-    db_path = f"./vector_databases/{student_id}"
+    db_path = f"./vector_lab_databases/{student_id}"
     if os.path.exists(db_path):
         embeddings = OpenAIEmbeddings(
             model="text-embedding-3-large",
