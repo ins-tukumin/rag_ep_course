@@ -115,7 +115,7 @@ if student_id:
               "type": "service_account",
               "project_id": "rag-ep-course",
               "private_key_id": "9ccd17ed215efabe4969d546a1e784763fae5f36",
-              "private_key": private_key
+              "private_key": private_key,
               "client_email": "firebase-adminsdk-610au@rag-ep-course.iam.gserviceaccount.com",
               "client_id": "115635233497515207535",
               "auth_uri": "https://accounts.google.com/o/oauth2/auth",
