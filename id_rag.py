@@ -114,7 +114,7 @@ if student_id:
         cred = credentials.Certificate({
               "type": "service_account",
               "project_id": "rag-ep-course",
-              "private_key_id": "9ccd17ed215efabe4969d546a1e784763fae5f36",
+              "private_key_id": "12241877af869fa801173248320dc60fa4ad63b0",
               "private_key": private_key,
               "client_email": "firebase-adminsdk-610au@rag-ep-course.iam.gserviceaccount.com",
               "client_id": "115635233497515207535",
@@ -123,6 +123,7 @@ if student_id:
               "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
               "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/firebase-adminsdk-610au%40rag-ep-course.iam.gserviceaccount.com",
               "universe_domain": "googleapis.com"
+
         }) 
         default_app = firebase_admin.initialize_app(cred)
     db = firestore.client()
